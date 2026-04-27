@@ -161,3 +161,124 @@ scp apang5@132.226.148.236:/home/apang5/termProject_exportedData/sample_export_w
 ```bash
 rm 00000*_0
 ```
+
+# Teammate Version: Querying Shared Hive Tables and Exporting Results
+
+This template is for teammates who want to query tables created under the `apang5` Hive database and export their own results.
+
+Replace:
+
+```text
+teammate_username
+```
+
+with your actual username/database.
+
+---
+
+## 1. Test access to the shared table
+
+Open Beeline:
+
+```bash
+beeline
+```
+
+Then run:
+
+```sql
+SELECT * FROM apang5.crime_data LIMIT 5;
+```
+Note: tables include:  
+- apang5.crime_data
+- apang5.arrest_data
+- apang5.stop_data
+
+If this works, you can query the shared table.
+
+---
+
+## 2. Create an export table in your own database
+
+```sql
+USE teammate_username;
+
+DROP TABLE IF EXISTS sample_export;
+
+CREATE TABLE sample_export
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION "/user/teammate_username/tmp/sample_export"
+AS
+SELECT
+    area,
+    area_name,
+    COUNT(*) AS record_count
+FROM apang5.crime_data
+GROUP BY area, area_name
+ORDER BY record_count DESC;
+```
+
+---
+
+## 3. Check the HDFS output
+
+```bash
+hdfs dfs -ls /user/teammate_username/tmp/sample_export
+```
+
+---
+
+## 4. Go to your export folder
+
+```bash
+mkdir -p ~/termProject_exportedData
+cd ~/termProject_exportedData
+```
+
+---
+
+## 5. Copy the part file(s) from HDFS
+
+```bash
+hdfs dfs -get /user/teammate_username/tmp/sample_export/00000*_0
+```
+
+---
+
+## 6. Merge or rename output
+
+If there are multiple files:
+
+```bash
+cat 00000*_0 > sample_export.txt
+```
+
+If there is only one file:
+
+```bash
+mv 000000_0 sample_export.txt
+```
+
+---
+
+## 7. Add the header row
+
+```bash
+echo -e "area\tarea_name\trecord_count" > sample_export_with_header.txt
+
+cat sample_export.txt >> sample_export_with_header.txt
+```
+
+---
+
+## 8. Copy it back to your local machine
+
+Run this from your local machine:
+
+```bash
+scp teammate_username@132.226.148.236:/home/teammate_username/termProject_exportedData/sample_export_with_header.txt .
+```
+
+---
