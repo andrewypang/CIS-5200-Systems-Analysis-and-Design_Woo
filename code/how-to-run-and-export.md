@@ -162,9 +162,9 @@ scp apang5@132.226.148.236:/home/apang5/termProject_exportedData/sample_export_w
 rm 00000*_0
 ```
 
-# Teammate Version: Querying Shared Hive Tables and Exporting Results
+# Querying from Others: Querying Shared Hive Tables and Exporting Results
 
-This template is for teammates who want to query tables created under the `apang5` Hive database and export their own results.
+This template is for teammates who want to query tables created by others. The following will use `apang5` Hive database as an example and export their own results.
 
 Replace:
 
