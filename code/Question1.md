@@ -1,11 +1,11 @@
 # Arrest Data Analysis
 
-# Create Arrest Data Table to Pull Data Necessary for Answering Questions:
-# What’s the Number of Arrests per year? Are there more and more arrests nowadays?
-# What’s the perpetrator like?
-#     - What's the age range of the arrest?
-#     - What’s the Race/Ethnicity of the arrest?
-#     - What are they getting arrested for?
+**Create Arrest Data Table to Pull Data Necessary for Answering Questions:**
+**What’s the Number of Arrests per year? Are there more and more arrests nowadays?**
+**What’s the perpetrator like?**
+**- What's the age range of the arrest?**
+**- What’s the Race/Ethnicity of the arrest?**
+**- What are they getting arrested for?**
 
 
 ```
