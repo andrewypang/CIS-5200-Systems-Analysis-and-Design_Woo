@@ -86,24 +86,25 @@ ORDER BY a.arrest_year;
 
 # Export Data from 1:
 ```
-DROP TABLE IF EXISTS arrests_by_sex_export;
+DROP TABLE IF EXISTS arrests_per_year_export;
 
-CREATE TABLE arrests_by_sex_export
+CREATE TABLE arrests_per_year_export
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY '\t'
 STORED AS TEXTFILE
-LOCATION "/user/rrami165/tmp/arrests_by_sex_export"
+LOCATION "/user/rrami165/tmp/arrests_per_year_export"
 AS
 SELECT
-    sex_code,
+    year(from_unixtime(unix_timestamp(arrest_date, 'MM/dd/yyyy'))) AS arrest_year,
     COUNT(*) AS num_arrests
 FROM arrest_data
-GROUP BY sex_code
-ORDER BY num_arrests DESC;
+WHERE unix_timestamp(arrest_date, 'MM/dd/yyyy') IS NOT NULL
+GROUP BY year(from_unixtime(unix_timestamp(arrest_date, 'MM/dd/yyyy')))
+ORDER BY arrest_year;
 
-hdfs dfs -get /user/username/tmp/arrests_by_sex_export ~/arrests_by_sex_export
-mv ~/arrests_by_sex_export/000000_0 ~/arrests_by_sex.tsv
-scp your_username@host1:~/arrests_by_sex.tsv .
+hdfs dfs -get /user/username/tmp/arrests_per_year_export ~/arrests_per_year_export
+mv ~/arrests_per_year_export/000000_0 ~/arrests_per_year.tsv
+scp your_username@host1:~/arrests_per_year.tsv .
 ```
 
 # 2): What’s the perpetrator like? This is usually answered with age, sex, and descent/race. What are they getting arrested for?
@@ -167,7 +168,7 @@ CREATE TABLE perpetrator_profile_export
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY '\t'
 STORED AS TEXTFILE
-LOCATION "/user/rrami165/tmp/perpetrator_profile_export"
+LOCATION "/user/username/tmp/perpetrator_profile_export"
 AS
 SELECT
     sex_code,
