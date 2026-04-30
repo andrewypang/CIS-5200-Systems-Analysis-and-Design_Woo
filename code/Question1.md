@@ -161,31 +161,17 @@ LIMIT 20;
 ```
 # Export 2:
 ```
-DROP TABLE IF EXISTS arrests_by_sex_export;
+DROP TABLE IF EXISTS perpetrator_profile_export;
 
-CREATE TABLE arrests_by_sex_export
+CREATE TABLE perpetrator_profile_export
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY '\t'
 STORED AS TEXTFILE
-LOCATION "/user/rrami165/tmp/arrests_by_sex_export"
+LOCATION "/user/rrami165/tmp/perpetrator_profile_export"
 AS
 SELECT
     sex_code,
-    COUNT(*) AS num_arrests
-FROM arrest_data
-GROUP BY sex_code
-ORDER BY num_arrests DESC;
-```
-```
-DROP TABLE IF EXISTS arrests_by_age_range_export;
-
-CREATE TABLE arrests_by_age_range_export
-ROW FORMAT DELIMITED
-FIELDS TERMINATED BY '\t'
-STORED AS TEXTFILE
-LOCATION "/user/rrami165/tmp/arrests_by_age_range_export"
-AS
-SELECT
+    descent_code,
     CASE
         WHEN age < 18 THEN 'Under 18'
         WHEN age BETWEEN 18 AND 24 THEN '18-24'
@@ -199,6 +185,8 @@ SELECT
 FROM arrest_data
 WHERE age IS NOT NULL
 GROUP BY
+    sex_code,
+    descent_code,
     CASE
         WHEN age < 18 THEN 'Under 18'
         WHEN age BETWEEN 18 AND 24 THEN '18-24'
@@ -208,22 +196,6 @@ GROUP BY
         WHEN age BETWEEN 55 AND 64 THEN '55-64'
         ELSE '65+'
     END
-ORDER BY age_range;
-```
-```
-DROP TABLE IF EXISTS arrests_by_descent_export;
-
-CREATE TABLE arrests_by_descent_export
-ROW FORMAT DELIMITED
-FIELDS TERMINATED BY '\t'
-STORED AS TEXTFILE
-LOCATION "/user/rrami165/tmp/arrests_by_descent_export"
-AS
-SELECT
-    descent_code,
-    COUNT(*) AS num_arrests
-FROM arrest_data
-GROUP BY descent_code
 ORDER BY num_arrests DESC;
 ```
 ```
@@ -233,7 +205,7 @@ CREATE TABLE arrests_by_charge_description_export
 ROW FORMAT DELIMITED
 FIELDS TERMINATED BY '\t'
 STORED AS TEXTFILE
-LOCATION "/user/rrami165/tmp/arrests_by_charge_description_export"
+LOCATION "/user/username/tmp/arrests_by_charge_description_export"
 AS
 SELECT
     charge_description,
@@ -243,4 +215,24 @@ WHERE charge_description IS NOT NULL
 GROUP BY charge_description
 ORDER BY num_arrests DESC;
 ```
+```
+DROP TABLE IF EXISTS arrests_time_map_export;
 
+CREATE TABLE arrests_time_map_export
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '\t'
+STORED AS TEXTFILE
+LOCATION "/user/username/tmp/arrests_time_map_export"
+AS
+SELECT
+    from_unixtime(unix_timestamp(arrest_date, 'MM/dd/yyyy')) AS arrest_date,
+    lat,
+    lon,
+    area_name
+FROM arrest_data
+WHERE lat IS NOT NULL
+  AND lon IS NOT NULL
+  AND lat != 0
+  AND lon != 0
+  AND arrest_date IS NOT NULL;
+```
